@@ -1,0 +1,16 @@
+apiVersion: humanitec.org/v1b1
+profile: argo-rollouts
+
+spec:
+  deploy:
+    when: deploy
+    success: available
+  labels:
+    totally: fine
+  rollout:
+    replicas: 3
+    strategy:
+      blueGreen: 
+        activeService: quickstart
+        previewService: quickstart-preview
+        autoPromotionEnabled: false

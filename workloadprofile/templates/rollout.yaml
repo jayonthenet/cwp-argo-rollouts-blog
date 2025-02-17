@@ -1,0 +1,26 @@
+{{ if dig "ports" nil .Values.service }}
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  {{ .Values.rollout | toYaml | nindent 2 }}  
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      {{- include "helpers.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "helpers.defaultLabels" . | nindent 8 }}
+    spec:
+      containers:
+        {{-
+        $containers := (dict
+        "containers" .Values.containers
+        "defaults"   (dict "resources" .Values.default_container_resources)
+        "resPrefix"   .Release.Name
+        ) | include "feature.containers" | fromYamlArray
+        -}}
+        {{- $containers | toYaml | nindent 8 -}}
+{{ end }}
